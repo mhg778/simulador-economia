@@ -32,9 +32,11 @@
 
 <div class="sidebar">
         <h2>📊 Demos Microeconomía</h2>
-        <button class="menu-btn active" onclick="cambiarDemo('impuestos')">1. Cuña e Incidencia Fiscal</button>
+        <button class="menu-btn active" onclick="cambiarDemo('impuestos')">1. Cuña e Incidencia</button>
         <button class="menu-btn" onclick="cambiarDemo('monopolio')">2. Monopolio</button>
-        <button class="menu-btn" onclick="cambiarDemo('mercado')">3. Controles de Mercado</button>
+        <button class="menu-btn" onclick="cambiarDemo('mercado')">3. Controles Mercado</button>
+        <button class="menu-btn" onclick="cambiarDemo('competencia')">4. Competencia Perfecta</button>
+        <button class="menu-btn" onclick="cambiarDemo('fpp')">5. FPP</button>
     </div>
 
     <div class="main-content">
@@ -59,50 +61,65 @@
                 <div id="controles-monopolio" class="grupo-controles" style="display: none;">
                     <label>Coste Marginal (CMg): <span id="val-cmg">15</span></label>
                     <input type="range" id="slide-cmg" min="5" max="30" value="15">
-                    <div style="margin-top: 20px; font-size: 0.9em; background: #fdfefe; padding: 10px; border: 1px solid #e1e8ed;">
-                        <span style="color: #27ae60; font-weight: bold;">■ Beneficio Monopolista</span><br>
-                        <span style="color: #f39c12; font-weight: bold;">■ Pérdida de Eficiencia (PIE)</span>
-                    </div>
                 </div>
 
                 <div id="controles-mercado" class="grupo-controles" style="display: none;">
                     <label>Desplazar Demanda: <span id="val-desp-demanda">0</span></label>
                     <input type="range" id="slide-desp-demanda" min="-5" max="5" value="0">
-
                     <label>Desplazar Oferta: <span id="val-desp-oferta">0</span></label>
                     <input type="range" id="slide-desp-oferta" min="-5" max="5" value="0">
-
                     <div style="margin-top: 20px; padding: 10px; border: 1px solid #e74c3c; border-radius: 5px; background: #fadbd8;">
                         <label style="color: #c0392b; cursor: pointer;">
                             <input type="checkbox" id="check-precio"> <strong>Intervenir Precio</strong>
                         </label>
                         <input type="range" id="slide-precio-gob" min="2" max="18" value="6" step="1" disabled style="margin-top:10px;">
-                        <div style="font-size: 0.85em; color: #c0392b; margin-top: 5px;">Precio fijado: <strong><span id="val-precio-gob">6</span> pts</strong></div>
+                        <div style="font-size: 0.85em; color: #c0392b; margin-top: 5px;">Precio fijado: <span id="val-precio-gob">6</span></div>
                     </div>
                 </div>
 
-            </div>
+                <div id="controles-competencia" class="grupo-controles" style="display: none;">
+                    <p style="font-size: 0.8em; color: #7f8c8d; margin-top: 0;">Función de Costes del examen:<br>CT = 450 + 15q + 2q²</p>
+                    <label>Precio de Mercado (P): <span id="val-precio-comp">115</span> €</label>
+                    <input type="range" id="slide-precio-comp" min="50" max="160" value="115" step="1">
+                    <div style="margin-top: 15px; font-size: 0.85em; text-align: left;">
+                        <span style="color: #27ae60;">■ Beneficios Extraordinarios</span><br>
+                        <span style="color: #c0392b;">■ Pérdidas</span>
+                    </div>
+                </div>
 
-            <canvas id="lienzo" width="600" height="400"></canvas>
-        </div>
-    </div>
+                <div id="controles-fpp" class="grupo-controles" style="display: none;">
+                    <label>Producción Bien X (Tecnología): <span id="val-fpp-x">60</span></label>
+                    <input type="range" id="slide-fpp-x" min="0" max="120" value="60">
+                    <label>Producción Bien Y (Alimentos): <span id="val-fpp-y">60</span></label>
+                    <input type="range" id="slide-fpp-y" min="0" max="120" value="60">
+                </div>
+
+            </div>
 <div class="resultados" style="margin-top: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
             <h3 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #2c3e50;">📊 Resultados Calculados</h3>
             
             <div id="resultados-impuestos">
-                <p><strong>Recaudación Fiscal (Rectángulo amarillo):</strong> <span id="res-recaudacion" style="color: #d35400; font-size: 1.1em;">0</span> pts</p>
-                <p><strong>Pérdida Irrecuperable de Eficiencia:</strong> <span id="res-pie-impuesto" style="color: #2980b9; font-size: 1.1em;">0</span> pts</p>
+                <p><strong>Recaudación Fiscal:</strong> <span id="res-recaudacion" style="color: #d35400;">0</span> pts</p>
+                <p><strong>PIE (Pérdida Eficiencia):</strong> <span id="res-pie-impuesto" style="color: #2980b9;">0</span> pts</p>
             </div>
-
             <div id="resultados-monopolio" style="display: none;">
-                <p><strong>Beneficio del Monopolista (Rectángulo verde):</strong> <span id="res-beneficio" style="color: #27ae60; font-size: 1.1em;">0</span> pts</p>
-                <p><strong>Pérdida Irrecuperable de Eficiencia:</strong> <span id="res-pie-monopolio" style="color: #e67e22; font-size: 1.1em;">0</span> pts</p>
+                <p><strong>Beneficio Monopolista:</strong> <span id="res-beneficio" style="color: #27ae60;">0</span> pts</p>
+                <p><strong>PIE (Pérdida Eficiencia):</strong> <span id="res-pie-monopolio" style="color: #e67e22;">0</span> pts</p>
+            </div>
+            <div id="resultados-mercado" style="display: none;">
+                <p><strong>Situación:</strong> <span id="res-situacion" style="color: #27ae60; font-weight: bold;">En Equilibrio</span></p>
+                <p><strong>Desajuste:</strong> <span id="res-desajuste">0</span> unidades</p>
             </div>
 
-            <div id="resultados-mercado" style="display: none;">
-                <p><strong>Punto de Equilibrio Natural:</strong> P = <span id="res-p-eq" style="font-weight:bold;">0</span> | Q = <span id="res-q-eq" style="font-weight:bold;">0</span></p>
-                <p><strong>Situación del Mercado:</strong> <span id="res-situacion" style="color: #27ae60; font-weight: bold;">En Equilibrio</span></p>
-                <p><strong>Desajuste:</strong> <span id="res-desajuste">0</span> unidades</p>
+            <div id="resultados-competencia" style="display: none;">
+                <p><strong>Cantidad Óptima (P = CMg):</strong> q = <span id="res-comp-q" style="font-weight:bold;">0</span></p>
+                <p><strong>Ingreso Total (IT):</strong> <span id="res-comp-it">0</span> €</p>
+                <p><strong>Coste Total (CT):</strong> <span id="res-comp-ct">0</span> €</p>
+                <p><strong>Beneficio (IT - CT):</strong> <span id="res-comp-beneficio" style="font-weight:bold; font-size:1.2em;">0</span> €</p>
+            </div>
+
+            <div id="resultados-fpp" style="display: none;">
+                <p><strong>Asignación de Recursos:</strong> <span id="res-fpp-estado" style="font-weight:bold; font-size:1.2em;">-</span></p>
             </div>
         </div>
     <script>
@@ -110,218 +127,241 @@ const canvas = document.getElementById('lienzo');
         const ctx = canvas.getContext('2d');
         let demoActual = 'impuestos'; 
 
-        // Elementos UI Impuestos
-        const slideImpuesto = document.getElementById('slide-impuesto');
-        const slideDemanda = document.getElementById('slide-demanda');
-        const slideOferta = document.getElementById('slide-oferta');
-        const valImpuesto = document.getElementById('val-impuesto');
-        const valDemanda = document.getElementById('val-demanda');
-        const valOferta = document.getElementById('val-oferta');
-
-        // Elementos UI Monopolio
-        const slideCmg = document.getElementById('slide-cmg');
-        const valCmg = document.getElementById('val-cmg');
-
-        // Elementos UI Mercado (NUEVO)
-        const slideDespDemanda = document.getElementById('slide-desp-demanda');
-        const slideDespOferta = document.getElementById('slide-desp-oferta');
-        const checkPrecio = document.getElementById('check-precio');
-        const slidePrecioGob = document.getElementById('slide-precio-gob');
-        const valDespDemanda = document.getElementById('val-desp-demanda');
-        const valDespOferta = document.getElementById('val-desp-oferta');
-        const valPrecioGob = document.getElementById('val-precio-gob');
-
-        // Textos del Header
-        const tituloDemo = document.getElementById('titulo-demo');
-        const descDemo = document.getElementById('descripcion-demo');
+        // Elementos UI
+        const ui = {
+            slideImpuesto: document.getElementById('slide-impuesto'), slideDemanda: document.getElementById('slide-demanda'), slideOferta: document.getElementById('slide-oferta'),
+            slideCmg: document.getElementById('slide-cmg'),
+            slideDespDemanda: document.getElementById('slide-desp-demanda'), slideDespOferta: document.getElementById('slide-desp-oferta'), checkPrecio: document.getElementById('check-precio'), slidePrecioGob: document.getElementById('slide-precio-gob'),
+            slidePrecioComp: document.getElementById('slide-precio-comp'),
+            slideFppX: document.getElementById('slide-fpp-x'), slideFppY: document.getElementById('slide-fpp-y')
+        };
 
         // --- SISTEMA DE NAVEGACIÓN (SPA) ---
         function cambiarDemo(demo) {
             demoActual = demo;
-            
-            // 1. Ocultar todos los controles y resultados
-            ['impuestos', 'monopolio', 'mercado'].forEach(d => {
+            ['impuestos', 'monopolio', 'mercado', 'competencia', 'fpp'].forEach(d => {
                 document.getElementById('controles-' + d).style.display = 'none';
                 document.getElementById('resultados-' + d).style.display = 'none';
             });
             
-            // 2. Actualizar botones visuales
-            const botones = document.querySelectorAll('.menu-btn');
-            botones.forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
 
-            // 3. Mostrar lo que toca
             document.getElementById('controles-' + demo).style.display = 'block';
             document.getElementById('resultados-' + demo).style.display = 'block';
 
-            if (demo === 'impuestos') {
-                tituloDemo.innerText = "Cuña Fiscal e Incidencia";
-                descDemo.innerText = "Modifica el impuesto y la elasticidad para ver quién soporta la carga fiscal.";
-            } else if (demo === 'monopolio') {
-                tituloDemo.innerText = "Maximización en Monopolio";
-                descDemo.innerText = "El monopolista produce donde IMg = CMg. Observa el beneficio y la PIE.";
-            } else if (demo === 'mercado') {
-                tituloDemo.innerText = "Equilibrio y Controles de Precio";
-                descDemo.innerText = "Desplaza las curvas o fija un precio máximo/mínimo para generar excesos de oferta o demanda.";
-            }
+            const titulos = {
+                'impuestos': { t: "Cuña Fiscal e Incidencia", d: "Modifica el impuesto y la elasticidad." },
+                'monopolio': { t: "Maximización en Monopolio", d: "El monopolista produce donde IMg = CMg." },
+                'mercado': { t: "Equilibrio y Controles de Precio", d: "Desplaza las curvas o fija un precio máximo/mínimo." },
+                'competencia': { t: "Competencia Perfecta (Tu Examen)", d: "La empresa maximiza donde P = CMg. Observa cómo cambian los beneficios si el mercado altera el precio." },
+                'fpp': { t: "Frontera de Posibilidades de Producción", d: "Mueve el punto para ver asignaciones ineficientes, eficientes e inalcanzables." }
+            };
+            
+            document.getElementById('titulo-demo').innerText = titulos[demo].t;
+            document.getElementById('descripcion-demo').innerText = titulos[demo].d;
             dibujarGrafico();
         }
 
         // --- MOTOR DE DIBUJO ---
         function dibujarGrafico() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const ox = 60; const oy = 350; const scaleX = 15; const scaleY = 10;
-
-            // Dibujar Ejes
-            ctx.beginPath(); ctx.moveTo(ox, 20); ctx.lineTo(ox, oy); ctx.lineTo(580, oy);
-            ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 2; ctx.stroke();
-            ctx.font = '14px Arial'; ctx.fillStyle = '#2c3e50';
-            ctx.fillText('Precio (P)', 10, 15); ctx.fillText('Cantidad (Q)', 500, oy + 20);
-
-            // ---------------------------------------------------------
-            // LÓGICA 1: IMPUESTOS
-            // ---------------------------------------------------------
+            const ox = 60; const oy = 350; 
+            
+            // Lógica 1: IMPUESTOS
             if (demoActual === 'impuestos') {
-                let T = parseFloat(slideImpuesto.value);
-                let md = parseFloat(slideDemanda.value);
-                let ms = parseFloat(slideOferta.value);
+                const scaleX = 15; const scaleY = 10;
+                dibujarEjes(ox, oy, 'Precio (P)', 'Cantidad (Q)');
+                let T = parseFloat(ui.slideImpuesto.value); let md = parseFloat(ui.slideDemanda.value); let ms = parseFloat(ui.slideOferta.value);
+                document.getElementById('val-impuesto').innerText = T;
                 
-                valImpuesto.innerText = T;
-                valDemanda.innerText = md >= 8 ? "Inelástica" : (md <= 3 ? "Elástica" : "Media");
-                valOferta.innerText = ms >= 8 ? "Inelástica" : (ms <= 3 ? "Elástica" : "Media");
-
-                const Qe = 12; const Pe = 15;
-                const a = Pe + md * Qe; const c = Pe - ms * Qe;
-                let Qt = (a - c - T) / (md + ms);
-                if (Qt < 0) Qt = 0;
+                const Qe = 12; const Pe = 15; const a = Pe + md * Qe; const c = Pe - ms * Qe;
+                let Qt = (a - c - T) / (md + ms); if (Qt < 0) Qt = 0;
                 let P_pagado = a - md * Qt; let P_recibido = c + ms * Qt;
 
                 if (T > 0 && Qt > 0) {
                     ctx.fillStyle = 'rgba(231, 76, 60, 0.3)'; ctx.fillRect(ox, oy - P_pagado * scaleY, Qt * scaleX, (P_pagado - Pe) * scaleY);
                     ctx.fillStyle = 'rgba(52, 152, 219, 0.3)'; ctx.fillRect(ox, oy - Pe * scaleY, Qt * scaleX, (Pe - P_recibido) * scaleY);
                 }
-
-                ctx.beginPath(); ctx.moveTo(ox + 2*scaleX, oy - (a - md*2)*scaleY); ctx.lineTo(ox + 25*scaleX, oy - (a - md*25)*scaleY); ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 3; ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(ox + 2*scaleX, oy - (c + ms*2)*scaleY); ctx.lineTo(ox + 25*scaleX, oy - (c + ms*25)*scaleY); ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
+                trazarLinea(ox + 2*scaleX, oy - (a - md*2)*scaleY, ox + 25*scaleX, oy - (a - md*25)*scaleY, '#2980b9');
+                trazarLinea(ox + 2*scaleX, oy - (c + ms*2)*scaleY, ox + 25*scaleX, oy - (c + ms*25)*scaleY, '#c0392b');
+                if (T > 0) trazarLinea(ox + 2*scaleX, oy - (c + T + ms*2)*scaleY, ox + 25*scaleX, oy - (c + T + ms*25)*scaleY, '#e74c3c', true);
                 
-                if (T > 0) {
-                    ctx.beginPath(); ctx.moveTo(ox + 2*scaleX, oy - (c + T + ms*2)*scaleY); ctx.lineTo(ox + 25*scaleX, oy - (c + T + ms*25)*scaleY); ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
-                }
-
                 document.getElementById('res-recaudacion').innerText = (T * Qt).toFixed(2);
                 document.getElementById('res-pie-impuesto').innerText = (((Qe - Qt) * T) / 2).toFixed(2);
             } 
             
-            // ---------------------------------------------------------
-            // LÓGICA 2: MONOPOLIO
-            // ---------------------------------------------------------
+            // Lógica 2: MONOPOLIO
             else if (demoActual === 'monopolio') {
-                let CMg = parseFloat(slideCmg.value);
-                valCmg.innerText = CMg;
-                const a = 40; const b = 1;
-                let Qm = (a - CMg) / (2 * b); let Pm = a - b * Qm; let Qc = (a - CMg) / b;
+                const scaleX = 15; const scaleY = 8;
+                dibujarEjes(ox, oy, 'Precio (P)', 'Cantidad (Q)');
+                let CMg = parseFloat(ui.slideCmg.value); document.getElementById('val-cmg').innerText = CMg;
+                const a = 40; const b = 1; let Qm = (a - CMg) / (2 * b); let Pm = a - b * Qm; let Qc = (a - CMg) / b;
 
                 ctx.fillStyle = 'rgba(39, 174, 96, 0.3)'; ctx.fillRect(ox, oy - Pm * scaleY, Qm * scaleX, (Pm - CMg) * scaleY);
                 ctx.fillStyle = 'rgba(243, 156, 18, 0.4)'; ctx.beginPath(); ctx.moveTo(ox + Qm * scaleX, oy - Pm * scaleY); ctx.lineTo(ox + Qc * scaleX, oy - CMg * scaleY); ctx.lineTo(ox + Qm * scaleX, oy - CMg * scaleY); ctx.fill();
 
-                ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + 40 * scaleX, oy); ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 3; ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + 20 * scaleX, oy); ctx.strokeStyle = '#8e44ad'; ctx.lineWidth = 3; ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(ox, oy - CMg * scaleY); ctx.lineTo(ox + 40 * scaleX, oy - CMg * scaleY); ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
-
+                trazarLinea(ox, oy - a * scaleY, ox + 40 * scaleX, oy, '#2980b9'); // D
+                trazarLinea(ox, oy - a * scaleY, ox + 20 * scaleX, oy, '#8e44ad'); // IMg
+                trazarLinea(ox, oy - CMg * scaleY, ox + 40 * scaleX, oy - CMg * scaleY, '#c0392b'); // CMg
+                
                 document.getElementById('res-beneficio').innerText = ((Pm - CMg) * Qm).toFixed(2);
                 document.getElementById('res-pie-monopolio').innerText = (((Qc - Qm) * (Pm - CMg)) / 2).toFixed(2);
             }
 
-            // ---------------------------------------------------------
-            // LÓGICA 3: MERCADO Y EXCESOS (Examen 1 y 2)
-            // ---------------------------------------------------------
+            // Lógica 3: MERCADO
             else if (demoActual === 'mercado') {
-                let dD = parseFloat(slideDespDemanda.value);
-                let dS = parseFloat(slideDespOferta.value);
-                let intervenido = checkPrecio.checked;
-                let Pgob = parseFloat(slidePrecioGob.value);
-                
-                valDespDemanda.innerText = dD > 0 ? "+" + dD : dD;
-                valDespOferta.innerText = dS > 0 ? "+" + dS : dS;
-                valPrecioGob.innerText = Pgob;
+                const scaleX = 15; const scaleY = 10;
+                dibujarEjes(ox, oy, 'Precio (P)', 'Cantidad (Q)');
+                let dD = parseFloat(ui.slideDespDemanda.value); let dS = parseFloat(ui.slideDespOferta.value);
+                let intervenido = ui.checkPrecio.checked; let Pgob = parseFloat(ui.slidePrecioGob.value);
+                document.getElementById('val-precio-gob').innerText = Pgob;
 
-                // Ecuaciones base estilo examen: D: P = 20 - Q | S: P = Q
-                // Con desplazamientos horizontales (Q): 
-                // Q_d = 20 - P + dD  =>  P = 20 + dD - Q
-                // Q_s = P + dS       =>  P = Q - dS
-                const a = 20 + dD;
-                const c = -dS; 
-                
-                // Equilibrio natural
-                let Qe = (a - c) / 2;
-                let Pe = a - Qe;
+                const a = 20 + dD; const c = -dS; let Qe = (a - c) / 2; let Pe = a - Qe;
 
-                // Dibujar Demanda
-                ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + a * scaleX, oy); 
-                ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 3; ctx.stroke();
-                ctx.fillStyle = '#2980b9'; ctx.fillText('D', ox + (a-2) * scaleX, oy - 15);
-
-                // Dibujar Oferta
-                ctx.beginPath(); ctx.moveTo(ox + Math.max(0, -c) * scaleX, oy - Math.max(0, c) * scaleY); ctx.lineTo(ox + 25 * scaleX, oy - (c + 25) * scaleY); 
-                ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
-                ctx.fillStyle = '#c0392b'; ctx.fillText('S', ox + 22 * scaleX, oy - (c + 22) * scaleY);
-
-                // Punto de equilibrio natural
+                trazarLinea(ox, oy - a * scaleY, ox + a * scaleX, oy, '#2980b9'); // D
+                trazarLinea(ox + Math.max(0, -c) * scaleX, oy - Math.max(0, c) * scaleY, ox + 25 * scaleX, oy - (c + 25) * scaleY, '#c0392b'); // S
                 ctx.beginPath(); ctx.arc(ox + Qe * scaleX, oy - Pe * scaleY, 5, 0, 2*Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill();
 
-                // Intervención de Precios
-                let resSituacion = document.getElementById('res-situacion');
-                let resDesajuste = document.getElementById('res-desajuste');
-
                 if (intervenido) {
-                    let Qd = a - Pgob;
-                    let Qs = Pgob - c;
-                    if (Qd < 0) Qd = 0; if (Qs < 0) Qs = 0;
-
-                    // Línea de precio fijado
-                    ctx.beginPath(); ctx.moveTo(ox, oy - Pgob * scaleY); ctx.lineTo(ox + 30 * scaleX, oy - Pgob * scaleY);
-                    ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
-                    ctx.fillStyle = '#e74c3c'; ctx.fillText('P. Intervenido', ox + 5, oy - Pgob * scaleY - 5);
-
-                    // Destacar Exceso
-                    ctx.beginPath(); ctx.moveTo(ox + Math.min(Qd, Qs) * scaleX, oy - Pgob * scaleY); ctx.lineTo(ox + Math.max(Qd, Qs) * scaleX, oy - Pgob * scaleY);
-                    ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 6; ctx.stroke();
-
-                    let diferencia = Math.abs(Qd - Qs);
-                    if (Qd > Qs) {
-                        resSituacion.innerText = "Exceso de Demanda (Escasez)"; resSituacion.style.color = "#e74c3c";
-                        resDesajuste.innerText = diferencia.toFixed(1);
-                        ctx.fillStyle = '#2c3e50'; ctx.fillText('Escasez', ox + ((Qd+Qs)/2) * scaleX - 20, oy - Pgob * scaleY + 15);
-                    } else if (Qs > Qd) {
-                        resSituacion.innerText = "Exceso de Oferta (Excedente)"; resSituacion.style.color = "#8e44ad";
-                        resDesajuste.innerText = diferencia.toFixed(1);
-                        ctx.fillStyle = '#2c3e50'; ctx.fillText('Excedente', ox + ((Qd+Qs)/2) * scaleX - 30, oy - Pgob * scaleY - 10);
-                    } else {
-                        resSituacion.innerText = "En Equilibrio (P. intervenido coincide)"; resSituacion.style.color = "#27ae60";
-                        resDesajuste.innerText = "0";
-                    }
+                    let Qd = a - Pgob; let Qs = Pgob - c; if (Qd < 0) Qd = 0; if (Qs < 0) Qs = 0;
+                    trazarLinea(ox, oy - Pgob * scaleY, ox + 30 * scaleX, oy - Pgob * scaleY, '#e74c3c', true);
+                    trazarLinea(ox + Math.min(Qd, Qs) * scaleX, oy - Pgob * scaleY, ox + Math.max(Qd, Qs) * scaleX, oy - Pgob * scaleY, '#f1c40f', false, 6);
+                    
+                    if (Qd > Qs) { document.getElementById('res-situacion').innerText = "Exceso Demanda"; document.getElementById('res-desajuste').innerText = (Qd - Qs).toFixed(1); }
+                    else if (Qs > Qd) { document.getElementById('res-situacion').innerText = "Exceso Oferta"; document.getElementById('res-desajuste').innerText = (Qs - Qd).toFixed(1); }
                 } else {
-                    resSituacion.innerText = "En Equilibrio"; resSituacion.style.color = "#27ae60";
-                    resDesajuste.innerText = "0";
+                    document.getElementById('res-situacion').innerText = "En Equilibrio"; document.getElementById('res-desajuste').innerText = "0";
+                }
+            }
+
+            // --- NUEVO LÓGICA 4: COMPETENCIA PERFECTA (EXAMEN) ---
+            else if (demoActual === 'competencia') {
+                const scaleX = 10; const scaleY = 1.5; // Escalas ajustadas a los datos de tu examen
+                dibujarEjes(ox, oy, 'Precio (€)', 'Cantidad (q)');
+                
+                let P = parseFloat(ui.slidePrecioComp.value);
+                document.getElementById('val-precio-comp').innerText = P;
+
+                // Ecuaciones del examen: CT = 450 + 15q + 2q^2 -> CMg = 15 + 4q
+                // Equilibrio: P = CMg -> q = (P - 15) / 4
+                let q = (P - 15) / 4; if (q < 0) q = 0;
+                let CT = 450 + 15*q + 2*(q*q);
+                let CTMe = q > 0 ? CT / q : 0;
+                let Beneficio = (P * q) - CT;
+
+                // Dibujar Rectángulo de Beneficio / Pérdida
+                if (q > 0) {
+                    if (Beneficio >= 0) {
+                        ctx.fillStyle = 'rgba(39, 174, 96, 0.3)'; // Verde
+                        ctx.fillRect(ox, oy - P * scaleY, q * scaleX, (P - CTMe) * scaleY);
+                    } else {
+                        ctx.fillStyle = 'rgba(231, 76, 60, 0.3)'; // Rojo
+                        ctx.fillRect(ox, oy - CTMe * scaleY, q * scaleX, (CTMe - P) * scaleY);
+                    }
                 }
 
-                document.getElementById('res-p-eq').innerText = Pe.toFixed(1);
-                document.getElementById('res-q-eq').innerText = Qe.toFixed(1);
+                // Dibujar Coste Marginal (CMg)
+                ctx.beginPath(); ctx.moveTo(ox, oy - 15 * scaleY); ctx.lineTo(ox + 45 * scaleX, oy - (15 + 4*45) * scaleY);
+                ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.fillStyle = '#c0392b'; ctx.fillText('CMg', ox + 46 * scaleX, oy - (15 + 4*46) * scaleY);
+
+                // Dibujar Coste Total Medio (CTMe) como curva aproximada
+                ctx.beginPath();
+                for(let i=1; i<=45; i++) {
+                    let y_ctme = (450/i) + 15 + 2*i;
+                    if(i===1) ctx.moveTo(ox + i * scaleX, oy - y_ctme * scaleY);
+                    else ctx.lineTo(ox + i * scaleX, oy - y_ctme * scaleY);
+                }
+                ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.fillStyle = '#e67e22'; ctx.fillText('CTMe', ox + 40 * scaleX, oy - ((450/40)+15+80) * scaleY - 10);
+
+                // Precio (IMg)
+                trazarLinea(ox, oy - P * scaleY, ox + 50 * scaleX, oy - P * scaleY, '#2980b9');
+                ctx.fillStyle = '#2980b9'; ctx.fillText('P = IMg', ox + 51 * scaleX, oy - P * scaleY + 4);
+
+                // Punto de corte P = CMg
+                ctx.beginPath(); ctx.arc(ox + q * scaleX, oy - P * scaleY, 5, 0, 2*Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill();
+                
+                // Mostrar datos reales del examen
+                document.getElementById('res-comp-q').innerText = q.toFixed(2);
+                document.getElementById('res-comp-it').innerText = (P * q).toFixed(2);
+                document.getElementById('res-comp-ct').innerText = CT.toFixed(2);
+                
+                let resBen = document.getElementById('res-comp-beneficio');
+                resBen.innerText = Beneficio.toFixed(2);
+                resBen.style.color = Beneficio >= 0 ? '#27ae60' : '#c0392b';
+            }
+
+            // --- NUEVO LÓGICA 5: FPP ---
+            else if (demoActual === 'fpp') {
+                const scaleX = 4; const scaleY = 3; // Llenar el lienzo de 100x100
+                dibujarEjes(ox, oy, 'Bien Y (Alimentos)', 'Bien X (Tecnología)');
+                
+                let X = parseFloat(ui.slideFppX.value); document.getElementById('val-fpp-x').innerText = X;
+                let Y = parseFloat(ui.slideFppY.value); document.getElementById('val-fpp-y').innerText = Y;
+
+                // Ecuación FPP circular simple: X^2 + Y^2 = 100^2
+                ctx.beginPath();
+                for(let i=0; i<=100; i++) {
+                    let y_fpp = Math.sqrt(10000 - i*i);
+                    if(i===0) ctx.moveTo(ox + i * scaleX, oy - y_fpp * scaleY);
+                    else ctx.lineTo(ox + i * scaleX, oy - y_fpp * scaleY);
+                }
+                ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 4; ctx.stroke();
+                ctx.fillStyle = '#2980b9'; ctx.fillText('FPP', ox + 50 * scaleX + 10, oy - Math.sqrt(10000 - 2500) * scaleY + 10);
+
+                // Evaluar punto (Asignación)
+                let estado = ""; let colorPunto = "";
+                let valorActual = (X*X) + (Y*Y);
+                
+                if (valorActual > 10200) { // Inalcanzable (margen de error visual)
+                    estado = "Asignación Inalcanzable (Faltan Recursos)"; colorPunto = "#c0392b"; // Rojo
+                } else if (valorActual < 9800) { // Ineficiente
+                    estado = "Asignación Ineficiente (Recursos Ociosos)"; colorPunto = "#f39c12"; // Naranja
+                } else { // Eficiente
+                    estado = "Asignación Muy Eficiente (Pleno Empleo)"; colorPunto = "#27ae60"; // Verde
+                }
+
+                // Dibujar el punto
+                ctx.beginPath(); ctx.arc(ox + X * scaleX, oy - Y * scaleY, 8, 0, 2*Math.PI); 
+                ctx.fillStyle = colorPunto; ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); // Borde blanco
+
+                // Líneas guía
+                trazarLinea(ox, oy - Y * scaleY, ox + X * scaleX, oy - Y * scaleY, colorPunto, true);
+                trazarLinea(ox + X * scaleX, oy, ox + X * scaleX, oy - Y * scaleY, colorPunto, true);
+
+                let resEstado = document.getElementById('res-fpp-estado');
+                resEstado.innerText = estado;
+                resEstado.style.color = colorPunto;
             }
         }
 
-        // --- LISTENERS ---
-        slideImpuesto.addEventListener('input', dibujarGrafico); slideDemanda.addEventListener('input', dibujarGrafico); slideOferta.addEventListener('input', dibujarGrafico); slideCmg.addEventListener('input', dibujarGrafico);
-        
-        // Listeners del Nuevo Módulo
-        slideDespDemanda.addEventListener('input', dibujarGrafico);
-        slideDespOferta.addEventListener('input', dibujarGrafico);
-        slidePrecioGob.addEventListener('input', dibujarGrafico);
-        
-        checkPrecio.addEventListener('change', function() {
-            slidePrecioGob.disabled = !this.checked;
-            dibujarGrafico();
+        // --- FUNCIONES AUXILIARES PARA LIMPIAR CÓDIGO ---
+        function dibujarEjes(ox, oy, labelY, labelX) {
+            ctx.beginPath(); ctx.moveTo(ox, 20); ctx.lineTo(ox, oy); ctx.lineTo(580, oy);
+            ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.font = '14px Arial'; ctx.fillStyle = '#2c3e50';
+            ctx.fillText(labelY, 10, 15); ctx.fillText(labelX, 500, oy + 20);
+        }
+        function trazarLinea(x1, y1, x2, y2, color, punteada=false, grosor=3) {
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color; ctx.lineWidth = grosor;
+            if(punteada) ctx.setLineDash([5, 5]); else ctx.setLineDash([]);
+            ctx.stroke(); ctx.setLineDash([]);
+        }
+
+        // --- LISTENERS GLOBALES ---
+        Object.values(ui).forEach(elemento => {
+            if (elemento && elemento.addEventListener) {
+                elemento.addEventListener('input', dibujarGrafico);
+                elemento.addEventListener('change', dibujarGrafico);
+            }
         });
+
+        // Activar/Desactivar slider de precio
+        ui.checkPrecio.addEventListener('change', function() { ui.slidePrecioGob.disabled = !this.checked; });
 
         dibujarGrafico();
     </script>
