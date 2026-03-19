@@ -73,11 +73,23 @@
             <canvas id="lienzo" width="600" height="400"></canvas>
         </div>
     </div>
+<div class="resultados" style="margin-top: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <h3 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #2c3e50;">📊 Resultados Calculados (Superficies)</h3>
+            
+            <div id="resultados-impuestos">
+                <p><strong>Recaudación Fiscal (Rectángulo amarillo):</strong> <span id="res-recaudacion" style="color: #d35400; font-size: 1.1em;">0</span> pts</p>
+                <p><strong>Pérdida Irrecuperable de Eficiencia (Triángulo azul):</strong> <span id="res-pie-impuesto" style="color: #2980b9; font-size: 1.1em;">0</span> pts</p>
+            </div>
 
+            <div id="resultados-monopolio" style="display: none;">
+                <p><strong>Beneficio del Monopolista (Rectángulo verde):</strong> <span id="res-beneficio" style="color: #27ae60; font-size: 1.1em;">0</span> pts</p>
+                <p><strong>Pérdida Irrecuperable de Eficiencia (Triángulo naranja):</strong> <span id="res-pie-monopolio" style="color: #e67e22; font-size: 1.1em;">0</span> pts</p>
+            </div>
+        </div>
     <script>
 const canvas = document.getElementById('lienzo');
         const ctx = canvas.getContext('2d');
-        let demoActual = 'impuestos'; // Variable para saber qué demo estamos viendo
+        let demoActual = 'impuestos'; 
 
         // Elementos UI Impuestos
         const slideImpuesto = document.getElementById('slide-impuesto');
@@ -103,18 +115,22 @@ const canvas = document.getElementById('lienzo');
             document.getElementById('controles-impuestos').style.display = 'none';
             document.getElementById('controles-monopolio').style.display = 'none';
             
-            // Actualizar botones del menú visualmente
+            // Actualizar botones visualmente
             const botones = document.querySelectorAll('.menu-btn');
             botones.forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
 
-            // Mostrar controles según la demo y cambiar títulos
+            // Mostrar controles y RESULTADOS según la demo
             if (demo === 'impuestos') {
                 document.getElementById('controles-impuestos').style.display = 'block';
+                document.getElementById('resultados-impuestos').style.display = 'block'; 
+                document.getElementById('resultados-monopolio').style.display = 'none';  
                 tituloDemo.innerText = "Cuña Fiscal e Incidencia";
                 descDemo.innerText = "Modifica el impuesto y la elasticidad para ver quién soporta la carga fiscal.";
             } else if (demo === 'monopolio') {
                 document.getElementById('controles-monopolio').style.display = 'block';
+                document.getElementById('resultados-monopolio').style.display = 'block'; 
+                document.getElementById('resultados-impuestos').style.display = 'none';  
                 tituloDemo.innerText = "Maximización en Monopolio";
                 descDemo.innerText = "El monopolista produce donde IMg = CMg. Observa el beneficio y la pérdida irrecuperable.";
             } else {
@@ -135,7 +151,7 @@ const canvas = document.getElementById('lienzo');
             ctx.font = '14px Arial'; ctx.fillStyle = '#2c3e50';
             ctx.fillText('Precio (P)', 10, 15); ctx.fillText('Cantidad (Q)', 500, oy + 20);
 
-            // --- LÓGICA DEMO 1: IMPUESTOS (La que ya tenías) ---
+            // --- LÓGICA DEMO 1: IMPUESTOS ---
             if (demoActual === 'impuestos') {
                 let T = parseFloat(slideImpuesto.value);
                 let md = parseFloat(slideDemanda.value);
@@ -164,65 +180,64 @@ const canvas = document.getElementById('lienzo');
                 if (T > 0) {
                     ctx.beginPath(); ctx.moveTo(ox + 2*scaleX, oy - (c + T + ms*2)*scaleY); ctx.lineTo(ox + 25*scaleX, oy - (c + T + ms*25)*scaleY); ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
                 }
+
+                // -> AQUÍ VAN LOS CÁLCULOS DEL IMPUESTO <-
+                let areaRecaudacion = T * Qt;
+                let areaPIE_imp = ((Qe - Qt) * T) / 2; 
+                document.getElementById('res-recaudacion').innerText = areaRecaudacion.toFixed(2);
+                document.getElementById('res-pie-impuesto').innerText = areaPIE_imp.toFixed(2);
             } 
             
-            // --- LÓGICA DEMO 2: MONOPOLIO (NUEVA) ---
+            // --- LÓGICA DEMO 2: MONOPOLIO ---
             else if (demoActual === 'monopolio') {
                 let CMg = parseFloat(slideCmg.value);
                 valCmg.innerText = CMg;
 
-                // Ecuaciones: D: P = 40 - Q  |  IMg: P = 40 - 2Q
                 const a = 40; const b = 1;
-                
-                // Equilibrio Monopolio: IMg = CMg -> 40 - 2Q = CMg
                 let Qm = (a - CMg) / (2 * b);
-                let Pm = a - b * Qm; // Precio en la curva de demanda
-
-                // Equilibrio Competencia Perfecta (para sacar la pérdida de eficiencia): D = CMg
+                let Pm = a - b * Qm; 
                 let Qc = (a - CMg) / b;
 
-                // 1. Dibujar Áreas
-                // Beneficio del Monopolista (Verde) -> (Pm - CMg) * Qm
+                // Dibujar Áreas
                 ctx.fillStyle = 'rgba(39, 174, 96, 0.3)';
                 ctx.fillRect(ox, oy - Pm * scaleY, Qm * scaleX, (Pm - CMg) * scaleY);
 
-                // Pérdida Irrecuperable de Eficiencia (Naranja)
                 ctx.fillStyle = 'rgba(243, 156, 18, 0.4)';
                 ctx.beginPath();
-                ctx.moveTo(ox + Qm * scaleX, oy - Pm * scaleY); // Vértice superior
-                ctx.lineTo(ox + Qc * scaleX, oy - CMg * scaleY); // Vértice derecho (D = CMg)
-                ctx.lineTo(ox + Qm * scaleX, oy - CMg * scaleY); // Vértice inferior
+                ctx.moveTo(ox + Qm * scaleX, oy - Pm * scaleY); 
+                ctx.lineTo(ox + Qc * scaleX, oy - CMg * scaleY); 
+                ctx.lineTo(ox + Qm * scaleX, oy - CMg * scaleY); 
                 ctx.fill();
 
-                // 2. Dibujar Curvas
-                // Demanda (Azul)
+                // Dibujar Curvas
                 ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + 40 * scaleX, oy); 
                 ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 3; ctx.stroke();
                 ctx.fillStyle = '#2980b9'; ctx.fillText('Demanda (D)', ox + 32 * scaleX, oy - 15);
 
-                // Ingreso Marginal (Morado) -> Cae el doble de rápido
                 ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + 20 * scaleX, oy); 
                 ctx.strokeStyle = '#8e44ad'; ctx.lineWidth = 3; ctx.stroke();
                 ctx.fillStyle = '#8e44ad'; ctx.fillText('IMg', ox + 15 * scaleX, oy - 15);
 
-                // Coste Marginal (Rojo) -> Línea horizontal para simplificar visualmente
                 ctx.beginPath(); ctx.moveTo(ox, oy - CMg * scaleY); ctx.lineTo(ox + 40 * scaleX, oy - CMg * scaleY); 
                 ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
                 ctx.fillStyle = '#c0392b'; ctx.fillText('CMg', ox + 35 * scaleX, oy - CMg * scaleY - 10);
 
-                // Líneas punteadas de referencia para Qm y Pm
                 ctx.beginPath(); ctx.moveTo(ox + Qm * scaleX, oy); ctx.lineTo(ox + Qm * scaleX, oy - Pm * scaleY);
                 ctx.moveTo(ox, oy - Pm * scaleY); ctx.lineTo(ox + Qm * scaleX, oy - Pm * scaleY);
                 ctx.strokeStyle = '#7f8c8d'; ctx.setLineDash([5, 5]); ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
 
-                // Puntos de equilibrio
-                ctx.beginPath(); ctx.arc(ox + Qm * scaleX, oy - Pm * scaleY, 5, 0, 2 * Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill(); // Punto en Demanda
-                ctx.beginPath(); ctx.arc(ox + Qm * scaleX, oy - CMg * scaleY, 5, 0, 2 * Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill(); // Punto en IMg = CMg
+                ctx.beginPath(); ctx.arc(ox + Qm * scaleX, oy - Pm * scaleY, 5, 0, 2 * Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill(); 
+                ctx.beginPath(); ctx.arc(ox + Qm * scaleX, oy - CMg * scaleY, 5, 0, 2 * Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill(); 
                 
-                // Etiquetas
                 ctx.font = '12px Arial'; ctx.fillStyle = '#333';
                 ctx.fillText(`Pm`, ox - 25, oy - Pm * scaleY + 5);
                 ctx.fillText(`Qm`, ox + Qm * scaleX - 10, oy + 15);
+
+                // -> AQUÍ VAN LOS CÁLCULOS DEL MONOPOLIO <-
+                let areaBeneficio = (Pm - CMg) * Qm;
+                let areaPIE_mon = ((Qc - Qm) * (Pm - CMg)) / 2;
+                document.getElementById('res-beneficio').innerText = areaBeneficio.toFixed(2);
+                document.getElementById('res-pie-monopolio').innerText = areaPIE_mon.toFixed(2);
             }
         }
 
@@ -232,7 +247,7 @@ const canvas = document.getElementById('lienzo');
         slideOferta.addEventListener('input', dibujarGrafico);
         slideCmg.addEventListener('input', dibujarGrafico);
 
-        dibujarGrafico(); // Llamada inicial
+        dibujarGrafico();
     </script>
 </body>
 </html>
