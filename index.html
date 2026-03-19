@@ -33,7 +33,7 @@
     <div class="sidebar">
         <h2>📊 Demos Microeconomía</h2>
         <button class="menu-btn active" onclick="cambiarDemo('impuestos')">1. Cuña e Incidencia Fiscal</button>
-        <button class="menu-btn" onclick="cambiarDemo('monopolio')">2. Monopolio (Próximamente)</button>
+        <button class="menu-btn" onclick="cambiarDemo('monopolio')">2. Monopolio</button>
         <button class="menu-btn" onclick="cambiarDemo('externalidades')">3. Externalidades (Próximamente)</button>
     </div>
 
@@ -43,16 +43,31 @@
             <p id="descripcion-demo">Modifica el impuesto y la elasticidad para ver quién soporta la carga fiscal.</p>
         </div>
 
-        <div class="simulator-container">
+<div class="simulator-container">
+<div class="simulator-container">
             <div class="controls" id="panel-controles">
-                <label>Impuesto (Cuña): <span id="val-impuesto">10</span> pts</label>
-                <input type="range" id="slide-impuesto" min="0" max="20" value="10">
+                
+                <div id="controles-impuestos" class="grupo-controles">
+                    <label>Impuesto (Cuña): <span id="val-impuesto">10</span> pts</label>
+                    <input type="range" id="slide-impuesto" min="0" max="20" value="10">
 
-                <label>Inclinación Demanda (Elasticidad): <span id="val-demanda">Media</span></label>
-                <input type="range" id="slide-demanda" min="1" max="10" value="3">
+                    <label>Inclinación Demanda (Elasticidad): <span id="val-demanda">Media</span></label>
+                    <input type="range" id="slide-demanda" min="1" max="10" value="3">
 
-                <label>Inclinación Oferta (Elasticidad): <span id="val-oferta">Media</span></label>
-                <input type="range" id="slide-oferta" min="1" max="10" value="3">
+                    <label>Inclinación Oferta (Elasticidad): <span id="val-oferta">Media</span></label>
+                    <input type="range" id="slide-oferta" min="1" max="10" value="3">
+                </div>
+
+                <div id="controles-monopolio" class="grupo-controles" style="display: none;">
+                    <label>Coste Marginal (CMg): <span id="val-cmg">15</span></label>
+                    <input type="range" id="slide-cmg" min="5" max="30" value="15">
+                    
+                    <div style="margin-top: 20px; font-size: 0.9em; background: #fdfefe; padding: 10px; border: 1px solid #e1e8ed;">
+                        <span style="color: #27ae60; font-weight: bold;">■ Beneficio Monopolista</span><br>
+                        <span style="color: #f39c12; font-weight: bold;">■ Pérdida de Eficiencia (PIE)</span>
+                    </div>
+                </div>
+
             </div>
 
             <canvas id="lienzo" width="600" height="400"></canvas>
