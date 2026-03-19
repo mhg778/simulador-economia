@@ -87,15 +87,19 @@
                     </div>
                 </div>
 
-                <div id="controles-fpp" class="grupo-controles" style="display: none;">
+				<div id="controles-fpp" class="grupo-controles" style="display: none;">
                     <label>Producción Bien X (Tecnología): <span id="val-fpp-x">60</span></label>
                     <input type="range" id="slide-fpp-x" min="0" max="120" value="60">
                     <label>Producción Bien Y (Alimentos): <span id="val-fpp-y">60</span></label>
                     <input type="range" id="slide-fpp-y" min="0" max="120" value="60">
                 </div>
 
+            </div> <canvas id="lienzo" width="600" height="400"></canvas>
+
+        </div> <div class="resultados" style="margin-top: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+
             </div>
-<div class="resultados" style="margin-top: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+				<div class="resultados" style="margin-top: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
             <h3 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #2c3e50;">📊 Resultados Calculados</h3>
             
             <div id="resultados-impuestos">
@@ -136,17 +140,25 @@ const canvas = document.getElementById('lienzo');
             slideFppX: document.getElementById('slide-fpp-x'), slideFppY: document.getElementById('slide-fpp-y')
         };
 
-        // --- SISTEMA DE NAVEGACIÓN (SPA) ---
+// --- SISTEMA DE NAVEGACIÓN (SPA) ---
         function cambiarDemo(demo) {
             demoActual = demo;
+            
+            // 1. Ocultar todos los paneles
             ['impuestos', 'monopolio', 'mercado', 'competencia', 'fpp'].forEach(d => {
                 document.getElementById('controles-' + d).style.display = 'none';
                 document.getElementById('resultados-' + d).style.display = 'none';
             });
             
-            document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            // 2. Actualizar botones visualmente (CORREGIDO)
+            document.querySelectorAll('.menu-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick').includes(demo)) {
+                    btn.classList.add('active');
+                }
+            });
 
+            // 3. Mostrar el panel activo
             document.getElementById('controles-' + demo).style.display = 'block';
             document.getElementById('resultados-' + demo).style.display = 'block';
 
@@ -160,9 +172,9 @@ const canvas = document.getElementById('lienzo');
             
             document.getElementById('titulo-demo').innerText = titulos[demo].t;
             document.getElementById('descripcion-demo').innerText = titulos[demo].d;
+            
             dibujarGrafico();
         }
-
         // --- MOTOR DE DIBUJO ---
         function dibujarGrafico() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
