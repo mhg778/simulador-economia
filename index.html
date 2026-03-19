@@ -30,11 +30,11 @@
 </head>
 <body>
 
-    <div class="sidebar">
+<div class="sidebar">
         <h2>📊 Demos Microeconomía</h2>
         <button class="menu-btn active" onclick="cambiarDemo('impuestos')">1. Cuña e Incidencia Fiscal</button>
         <button class="menu-btn" onclick="cambiarDemo('monopolio')">2. Monopolio</button>
-        <button class="menu-btn" onclick="cambiarDemo('externalidades')">3. Externalidades (Próximamente)</button>
+        <button class="menu-btn" onclick="cambiarDemo('mercado')">3. Controles de Mercado</button>
     </div>
 
     <div class="main-content">
@@ -45,26 +45,39 @@
 
 <div class="simulator-container">
 <div class="simulator-container">
-            <div class="controls" id="panel-controles">
+<div class="controls" id="panel-controles">
                 
                 <div id="controles-impuestos" class="grupo-controles">
                     <label>Impuesto (Cuña): <span id="val-impuesto">10</span> pts</label>
                     <input type="range" id="slide-impuesto" min="0" max="20" value="10">
-
-                    <label>Inclinación Demanda (Elasticidad): <span id="val-demanda">Media</span></label>
+                    <label>Inclinación Demanda: <span id="val-demanda">Media</span></label>
                     <input type="range" id="slide-demanda" min="1" max="10" value="3">
-
-                    <label>Inclinación Oferta (Elasticidad): <span id="val-oferta">Media</span></label>
+                    <label>Inclinación Oferta: <span id="val-oferta">Media</span></label>
                     <input type="range" id="slide-oferta" min="1" max="10" value="3">
                 </div>
 
                 <div id="controles-monopolio" class="grupo-controles" style="display: none;">
                     <label>Coste Marginal (CMg): <span id="val-cmg">15</span></label>
                     <input type="range" id="slide-cmg" min="5" max="30" value="15">
-                    
                     <div style="margin-top: 20px; font-size: 0.9em; background: #fdfefe; padding: 10px; border: 1px solid #e1e8ed;">
                         <span style="color: #27ae60; font-weight: bold;">■ Beneficio Monopolista</span><br>
                         <span style="color: #f39c12; font-weight: bold;">■ Pérdida de Eficiencia (PIE)</span>
+                    </div>
+                </div>
+
+                <div id="controles-mercado" class="grupo-controles" style="display: none;">
+                    <label>Desplazar Demanda: <span id="val-desp-demanda">0</span></label>
+                    <input type="range" id="slide-desp-demanda" min="-5" max="5" value="0">
+
+                    <label>Desplazar Oferta: <span id="val-desp-oferta">0</span></label>
+                    <input type="range" id="slide-desp-oferta" min="-5" max="5" value="0">
+
+                    <div style="margin-top: 20px; padding: 10px; border: 1px solid #e74c3c; border-radius: 5px; background: #fadbd8;">
+                        <label style="color: #c0392b; cursor: pointer;">
+                            <input type="checkbox" id="check-precio"> <strong>Intervenir Precio</strong>
+                        </label>
+                        <input type="range" id="slide-precio-gob" min="2" max="18" value="6" step="1" disabled style="margin-top:10px;">
+                        <div style="font-size: 0.85em; color: #c0392b; margin-top: 5px;">Precio fijado: <strong><span id="val-precio-gob">6</span> pts</strong></div>
                     </div>
                 </div>
 
@@ -74,16 +87,22 @@
         </div>
     </div>
 <div class="resultados" style="margin-top: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-            <h3 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #2c3e50;">📊 Resultados Calculados (Superficies)</h3>
+            <h3 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #2c3e50;">📊 Resultados Calculados</h3>
             
             <div id="resultados-impuestos">
                 <p><strong>Recaudación Fiscal (Rectángulo amarillo):</strong> <span id="res-recaudacion" style="color: #d35400; font-size: 1.1em;">0</span> pts</p>
-                <p><strong>Pérdida Irrecuperable de Eficiencia (Triángulo azul):</strong> <span id="res-pie-impuesto" style="color: #2980b9; font-size: 1.1em;">0</span> pts</p>
+                <p><strong>Pérdida Irrecuperable de Eficiencia:</strong> <span id="res-pie-impuesto" style="color: #2980b9; font-size: 1.1em;">0</span> pts</p>
             </div>
 
             <div id="resultados-monopolio" style="display: none;">
                 <p><strong>Beneficio del Monopolista (Rectángulo verde):</strong> <span id="res-beneficio" style="color: #27ae60; font-size: 1.1em;">0</span> pts</p>
-                <p><strong>Pérdida Irrecuperable de Eficiencia (Triángulo naranja):</strong> <span id="res-pie-monopolio" style="color: #e67e22; font-size: 1.1em;">0</span> pts</p>
+                <p><strong>Pérdida Irrecuperable de Eficiencia:</strong> <span id="res-pie-monopolio" style="color: #e67e22; font-size: 1.1em;">0</span> pts</p>
+            </div>
+
+            <div id="resultados-mercado" style="display: none;">
+                <p><strong>Punto de Equilibrio Natural:</strong> P = <span id="res-p-eq" style="font-weight:bold;">0</span> | Q = <span id="res-q-eq" style="font-weight:bold;">0</span></p>
+                <p><strong>Situación del Mercado:</strong> <span id="res-situacion" style="color: #27ae60; font-weight: bold;">En Equilibrio</span></p>
+                <p><strong>Desajuste:</strong> <span id="res-desajuste">0</span> unidades</p>
             </div>
         </div>
     <script>
@@ -103,6 +122,15 @@ const canvas = document.getElementById('lienzo');
         const slideCmg = document.getElementById('slide-cmg');
         const valCmg = document.getElementById('val-cmg');
 
+        // Elementos UI Mercado (NUEVO)
+        const slideDespDemanda = document.getElementById('slide-desp-demanda');
+        const slideDespOferta = document.getElementById('slide-desp-oferta');
+        const checkPrecio = document.getElementById('check-precio');
+        const slidePrecioGob = document.getElementById('slide-precio-gob');
+        const valDespDemanda = document.getElementById('val-desp-demanda');
+        const valDespOferta = document.getElementById('val-desp-oferta');
+        const valPrecioGob = document.getElementById('val-precio-gob');
+
         // Textos del Header
         const tituloDemo = document.getElementById('titulo-demo');
         const descDemo = document.getElementById('descripcion-demo');
@@ -111,31 +139,30 @@ const canvas = document.getElementById('lienzo');
         function cambiarDemo(demo) {
             demoActual = demo;
             
-            // Ocultar todos los controles
-            document.getElementById('controles-impuestos').style.display = 'none';
-            document.getElementById('controles-monopolio').style.display = 'none';
+            // 1. Ocultar todos los controles y resultados
+            ['impuestos', 'monopolio', 'mercado'].forEach(d => {
+                document.getElementById('controles-' + d).style.display = 'none';
+                document.getElementById('resultados-' + d).style.display = 'none';
+            });
             
-            // Actualizar botones visualmente
+            // 2. Actualizar botones visuales
             const botones = document.querySelectorAll('.menu-btn');
             botones.forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
 
-            // Mostrar controles y RESULTADOS según la demo
+            // 3. Mostrar lo que toca
+            document.getElementById('controles-' + demo).style.display = 'block';
+            document.getElementById('resultados-' + demo).style.display = 'block';
+
             if (demo === 'impuestos') {
-                document.getElementById('controles-impuestos').style.display = 'block';
-                document.getElementById('resultados-impuestos').style.display = 'block'; 
-                document.getElementById('resultados-monopolio').style.display = 'none';  
                 tituloDemo.innerText = "Cuña Fiscal e Incidencia";
                 descDemo.innerText = "Modifica el impuesto y la elasticidad para ver quién soporta la carga fiscal.";
             } else if (demo === 'monopolio') {
-                document.getElementById('controles-monopolio').style.display = 'block';
-                document.getElementById('resultados-monopolio').style.display = 'block'; 
-                document.getElementById('resultados-impuestos').style.display = 'none';  
                 tituloDemo.innerText = "Maximización en Monopolio";
-                descDemo.innerText = "El monopolista produce donde IMg = CMg. Observa el beneficio y la pérdida irrecuperable.";
-            } else {
-                alert("Esta demo estará disponible pronto.");
-                return;
+                descDemo.innerText = "El monopolista produce donde IMg = CMg. Observa el beneficio y la PIE.";
+            } else if (demo === 'mercado') {
+                tituloDemo.innerText = "Equilibrio y Controles de Precio";
+                descDemo.innerText = "Desplaza las curvas o fija un precio máximo/mínimo para generar excesos de oferta o demanda.";
             }
             dibujarGrafico();
         }
@@ -143,15 +170,17 @@ const canvas = document.getElementById('lienzo');
         // --- MOTOR DE DIBUJO ---
         function dibujarGrafico() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const ox = 60; const oy = 350; const scaleX = 15; const scaleY = 8;
+            const ox = 60; const oy = 350; const scaleX = 15; const scaleY = 10;
 
-            // Dibujar Ejes siempre
+            // Dibujar Ejes
             ctx.beginPath(); ctx.moveTo(ox, 20); ctx.lineTo(ox, oy); ctx.lineTo(580, oy);
             ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 2; ctx.stroke();
             ctx.font = '14px Arial'; ctx.fillStyle = '#2c3e50';
             ctx.fillText('Precio (P)', 10, 15); ctx.fillText('Cantidad (Q)', 500, oy + 20);
 
-            // --- LÓGICA DEMO 1: IMPUESTOS ---
+            // ---------------------------------------------------------
+            // LÓGICA 1: IMPUESTOS
+            // ---------------------------------------------------------
             if (demoActual === 'impuestos') {
                 let T = parseFloat(slideImpuesto.value);
                 let md = parseFloat(slideDemanda.value);
@@ -168,10 +197,8 @@ const canvas = document.getElementById('lienzo');
                 let P_pagado = a - md * Qt; let P_recibido = c + ms * Qt;
 
                 if (T > 0 && Qt > 0) {
-                    ctx.fillStyle = 'rgba(231, 76, 60, 0.3)';
-                    ctx.fillRect(ox, oy - P_pagado * scaleY, Qt * scaleX, (P_pagado - Pe) * scaleY);
-                    ctx.fillStyle = 'rgba(52, 152, 219, 0.3)';
-                    ctx.fillRect(ox, oy - Pe * scaleY, Qt * scaleX, (Pe - P_recibido) * scaleY);
+                    ctx.fillStyle = 'rgba(231, 76, 60, 0.3)'; ctx.fillRect(ox, oy - P_pagado * scaleY, Qt * scaleX, (P_pagado - Pe) * scaleY);
+                    ctx.fillStyle = 'rgba(52, 152, 219, 0.3)'; ctx.fillRect(ox, oy - Pe * scaleY, Qt * scaleX, (Pe - P_recibido) * scaleY);
                 }
 
                 ctx.beginPath(); ctx.moveTo(ox + 2*scaleX, oy - (a - md*2)*scaleY); ctx.lineTo(ox + 25*scaleX, oy - (a - md*25)*scaleY); ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 3; ctx.stroke();
@@ -181,71 +208,120 @@ const canvas = document.getElementById('lienzo');
                     ctx.beginPath(); ctx.moveTo(ox + 2*scaleX, oy - (c + T + ms*2)*scaleY); ctx.lineTo(ox + 25*scaleX, oy - (c + T + ms*25)*scaleY); ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
                 }
 
-                // -> AQUÍ VAN LOS CÁLCULOS DEL IMPUESTO <-
-                let areaRecaudacion = T * Qt;
-                let areaPIE_imp = ((Qe - Qt) * T) / 2; 
-                document.getElementById('res-recaudacion').innerText = areaRecaudacion.toFixed(2);
-                document.getElementById('res-pie-impuesto').innerText = areaPIE_imp.toFixed(2);
+                document.getElementById('res-recaudacion').innerText = (T * Qt).toFixed(2);
+                document.getElementById('res-pie-impuesto').innerText = (((Qe - Qt) * T) / 2).toFixed(2);
             } 
             
-            // --- LÓGICA DEMO 2: MONOPOLIO ---
+            // ---------------------------------------------------------
+            // LÓGICA 2: MONOPOLIO
+            // ---------------------------------------------------------
             else if (demoActual === 'monopolio') {
                 let CMg = parseFloat(slideCmg.value);
                 valCmg.innerText = CMg;
-
                 const a = 40; const b = 1;
-                let Qm = (a - CMg) / (2 * b);
-                let Pm = a - b * Qm; 
-                let Qc = (a - CMg) / b;
+                let Qm = (a - CMg) / (2 * b); let Pm = a - b * Qm; let Qc = (a - CMg) / b;
 
-                // Dibujar Áreas
-                ctx.fillStyle = 'rgba(39, 174, 96, 0.3)';
-                ctx.fillRect(ox, oy - Pm * scaleY, Qm * scaleX, (Pm - CMg) * scaleY);
+                ctx.fillStyle = 'rgba(39, 174, 96, 0.3)'; ctx.fillRect(ox, oy - Pm * scaleY, Qm * scaleX, (Pm - CMg) * scaleY);
+                ctx.fillStyle = 'rgba(243, 156, 18, 0.4)'; ctx.beginPath(); ctx.moveTo(ox + Qm * scaleX, oy - Pm * scaleY); ctx.lineTo(ox + Qc * scaleX, oy - CMg * scaleY); ctx.lineTo(ox + Qm * scaleX, oy - CMg * scaleY); ctx.fill();
 
-                ctx.fillStyle = 'rgba(243, 156, 18, 0.4)';
-                ctx.beginPath();
-                ctx.moveTo(ox + Qm * scaleX, oy - Pm * scaleY); 
-                ctx.lineTo(ox + Qc * scaleX, oy - CMg * scaleY); 
-                ctx.lineTo(ox + Qm * scaleX, oy - CMg * scaleY); 
-                ctx.fill();
+                ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + 40 * scaleX, oy); ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + 20 * scaleX, oy); ctx.strokeStyle = '#8e44ad'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(ox, oy - CMg * scaleY); ctx.lineTo(ox + 40 * scaleX, oy - CMg * scaleY); ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
 
-                // Dibujar Curvas
-                ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + 40 * scaleX, oy); 
-                ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 3; ctx.stroke();
-                ctx.fillStyle = '#2980b9'; ctx.fillText('Demanda (D)', ox + 32 * scaleX, oy - 15);
+                document.getElementById('res-beneficio').innerText = ((Pm - CMg) * Qm).toFixed(2);
+                document.getElementById('res-pie-monopolio').innerText = (((Qc - Qm) * (Pm - CMg)) / 2).toFixed(2);
+            }
 
-                ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + 20 * scaleX, oy); 
-                ctx.strokeStyle = '#8e44ad'; ctx.lineWidth = 3; ctx.stroke();
-                ctx.fillStyle = '#8e44ad'; ctx.fillText('IMg', ox + 15 * scaleX, oy - 15);
-
-                ctx.beginPath(); ctx.moveTo(ox, oy - CMg * scaleY); ctx.lineTo(ox + 40 * scaleX, oy - CMg * scaleY); 
-                ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
-                ctx.fillStyle = '#c0392b'; ctx.fillText('CMg', ox + 35 * scaleX, oy - CMg * scaleY - 10);
-
-                ctx.beginPath(); ctx.moveTo(ox + Qm * scaleX, oy); ctx.lineTo(ox + Qm * scaleX, oy - Pm * scaleY);
-                ctx.moveTo(ox, oy - Pm * scaleY); ctx.lineTo(ox + Qm * scaleX, oy - Pm * scaleY);
-                ctx.strokeStyle = '#7f8c8d'; ctx.setLineDash([5, 5]); ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
-
-                ctx.beginPath(); ctx.arc(ox + Qm * scaleX, oy - Pm * scaleY, 5, 0, 2 * Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill(); 
-                ctx.beginPath(); ctx.arc(ox + Qm * scaleX, oy - CMg * scaleY, 5, 0, 2 * Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill(); 
+            // ---------------------------------------------------------
+            // LÓGICA 3: MERCADO Y EXCESOS (Examen 1 y 2)
+            // ---------------------------------------------------------
+            else if (demoActual === 'mercado') {
+                let dD = parseFloat(slideDespDemanda.value);
+                let dS = parseFloat(slideDespOferta.value);
+                let intervenido = checkPrecio.checked;
+                let Pgob = parseFloat(slidePrecioGob.value);
                 
-                ctx.font = '12px Arial'; ctx.fillStyle = '#333';
-                ctx.fillText(`Pm`, ox - 25, oy - Pm * scaleY + 5);
-                ctx.fillText(`Qm`, ox + Qm * scaleX - 10, oy + 15);
+                valDespDemanda.innerText = dD > 0 ? "+" + dD : dD;
+                valDespOferta.innerText = dS > 0 ? "+" + dS : dS;
+                valPrecioGob.innerText = Pgob;
 
-                // -> AQUÍ VAN LOS CÁLCULOS DEL MONOPOLIO <-
-                let areaBeneficio = (Pm - CMg) * Qm;
-                let areaPIE_mon = ((Qc - Qm) * (Pm - CMg)) / 2;
-                document.getElementById('res-beneficio').innerText = areaBeneficio.toFixed(2);
-                document.getElementById('res-pie-monopolio').innerText = areaPIE_mon.toFixed(2);
+                // Ecuaciones base estilo examen: D: P = 20 - Q | S: P = Q
+                // Con desplazamientos horizontales (Q): 
+                // Q_d = 20 - P + dD  =>  P = 20 + dD - Q
+                // Q_s = P + dS       =>  P = Q - dS
+                const a = 20 + dD;
+                const c = -dS; 
+                
+                // Equilibrio natural
+                let Qe = (a - c) / 2;
+                let Pe = a - Qe;
+
+                // Dibujar Demanda
+                ctx.beginPath(); ctx.moveTo(ox, oy - a * scaleY); ctx.lineTo(ox + a * scaleX, oy); 
+                ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.fillStyle = '#2980b9'; ctx.fillText('D', ox + (a-2) * scaleX, oy - 15);
+
+                // Dibujar Oferta
+                ctx.beginPath(); ctx.moveTo(ox + Math.max(0, -c) * scaleX, oy - Math.max(0, c) * scaleY); ctx.lineTo(ox + 25 * scaleX, oy - (c + 25) * scaleY); 
+                ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.fillStyle = '#c0392b'; ctx.fillText('S', ox + 22 * scaleX, oy - (c + 22) * scaleY);
+
+                // Punto de equilibrio natural
+                ctx.beginPath(); ctx.arc(ox + Qe * scaleX, oy - Pe * scaleY, 5, 0, 2*Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill();
+
+                // Intervención de Precios
+                let resSituacion = document.getElementById('res-situacion');
+                let resDesajuste = document.getElementById('res-desajuste');
+
+                if (intervenido) {
+                    let Qd = a - Pgob;
+                    let Qs = Pgob - c;
+                    if (Qd < 0) Qd = 0; if (Qs < 0) Qs = 0;
+
+                    // Línea de precio fijado
+                    ctx.beginPath(); ctx.moveTo(ox, oy - Pgob * scaleY); ctx.lineTo(ox + 30 * scaleX, oy - Pgob * scaleY);
+                    ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
+                    ctx.fillStyle = '#e74c3c'; ctx.fillText('P. Intervenido', ox + 5, oy - Pgob * scaleY - 5);
+
+                    // Destacar Exceso
+                    ctx.beginPath(); ctx.moveTo(ox + Math.min(Qd, Qs) * scaleX, oy - Pgob * scaleY); ctx.lineTo(ox + Math.max(Qd, Qs) * scaleX, oy - Pgob * scaleY);
+                    ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 6; ctx.stroke();
+
+                    let diferencia = Math.abs(Qd - Qs);
+                    if (Qd > Qs) {
+                        resSituacion.innerText = "Exceso de Demanda (Escasez)"; resSituacion.style.color = "#e74c3c";
+                        resDesajuste.innerText = diferencia.toFixed(1);
+                        ctx.fillStyle = '#2c3e50'; ctx.fillText('Escasez', ox + ((Qd+Qs)/2) * scaleX - 20, oy - Pgob * scaleY + 15);
+                    } else if (Qs > Qd) {
+                        resSituacion.innerText = "Exceso de Oferta (Excedente)"; resSituacion.style.color = "#8e44ad";
+                        resDesajuste.innerText = diferencia.toFixed(1);
+                        ctx.fillStyle = '#2c3e50'; ctx.fillText('Excedente', ox + ((Qd+Qs)/2) * scaleX - 30, oy - Pgob * scaleY - 10);
+                    } else {
+                        resSituacion.innerText = "En Equilibrio (P. intervenido coincide)"; resSituacion.style.color = "#27ae60";
+                        resDesajuste.innerText = "0";
+                    }
+                } else {
+                    resSituacion.innerText = "En Equilibrio"; resSituacion.style.color = "#27ae60";
+                    resDesajuste.innerText = "0";
+                }
+
+                document.getElementById('res-p-eq').innerText = Pe.toFixed(1);
+                document.getElementById('res-q-eq').innerText = Qe.toFixed(1);
             }
         }
 
-        // Event Listeners (Escuchadores)
-        slideImpuesto.addEventListener('input', dibujarGrafico);
-        slideDemanda.addEventListener('input', dibujarGrafico);
-        slideOferta.addEventListener('input', dibujarGrafico);
-        slideCmg.addEventListener('input', dibujarGrafico);
+        // --- LISTENERS ---
+        slideImpuesto.addEventListener('input', dibujarGrafico); slideDemanda.addEventListener('input', dibujarGrafico); slideOferta.addEventListener('input', dibujarGrafico); slideCmg.addEventListener('input', dibujarGrafico);
+        
+        // Listeners del Nuevo Módulo
+        slideDespDemanda.addEventListener('input', dibujarGrafico);
+        slideDespOferta.addEventListener('input', dibujarGrafico);
+        slidePrecioGob.addEventListener('input', dibujarGrafico);
+        
+        checkPrecio.addEventListener('change', function() {
+            slidePrecioGob.disabled = !this.checked;
+            dibujarGrafico();
+        });
 
         dibujarGrafico();
     </script>
