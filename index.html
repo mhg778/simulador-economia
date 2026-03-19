@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Economía | URJC</title>
+    <style>
+        /* Estilos generales para que parezca una App real */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; height: 100vh; background-color: #f4f6f9; color: #333; }
+        
+        /* Menú Lateral (Sidebar) */
+        .sidebar { width: 250px; background-color: #2c3e50; color: white; padding: 20px; display: flex; flex-direction: column; }
+        .sidebar h2 { font-size: 1.2em; border-bottom: 2px solid #34495e; padding-bottom: 10px; margin-bottom: 20px; }
+        .menu-btn { background: #34495e; color: white; border: none; padding: 15px; margin-bottom: 10px; border-radius: 5px; cursor: pointer; text-align: left; font-size: 1em; transition: 0.3s; }
+        .menu-btn:hover, .menu-btn.active { background: #3498db; }
+
+        /* Área Principal donde va el gráfico */
+        .main-content { flex: 1; display: flex; flex-direction: column; padding: 30px; overflow-y: auto; }
+        .header { margin-bottom: 20px; }
+        .header h1 { margin: 0; color: #2c3e50; }
+        .header p { color: #7f8c8d; }
+
+        /* Contenedor del Simulador (Controles + Canvas) */
+        .simulator-container { display: flex; gap: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .controls { width: 300px; padding-right: 20px; border-right: 1px solid #eee; }
+        .controls label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.9em; }
+        .controls input[type="range"] { width: 100%; margin-top: 5px; cursor: pointer; }
+        canvas { flex: 1; background: #fafafa; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>📊 Demos Microeconomía</h2>
+        <button class="menu-btn active" onclick="cambiarDemo('impuestos')">1. Cuña e Incidencia Fiscal</button>
+        <button class="menu-btn" onclick="cambiarDemo('monopolio')">2. Monopolio (Próximamente)</button>
+        <button class="menu-btn" onclick="cambiarDemo('externalidades')">3. Externalidades (Próximamente)</button>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1 id="titulo-demo">Cuña Fiscal e Incidencia</h1>
+            <p id="descripcion-demo">Modifica el impuesto y la elasticidad para ver quién soporta la carga fiscal.</p>
+        </div>
+
+        <div class="simulator-container">
+            <div class="controls" id="panel-controles">
+                <label>Impuesto (Cuña): <span id="val-impuesto">10</span> pts</label>
+                <input type="range" id="slide-impuesto" min="0" max="20" value="10">
+
+                <label>Inclinación Demanda (Elasticidad): <span id="val-demanda">Media</span></label>
+                <input type="range" id="slide-demanda" min="1" max="10" value="3">
+
+                <label>Inclinación Oferta (Elasticidad): <span id="val-oferta">Media</span></label>
+                <input type="range" id="slide-oferta" min="1" max="10" value="3">
+            </div>
+
+            <canvas id="lienzo" width="600" height="400"></canvas>
+        </div>
+    </div>
+
+    <script>
+// 1. Conectar con los elementos del HTML
+        const canvas = document.getElementById('lienzo');
+        const ctx = canvas.getContext('2d');
+
+        const slideImpuesto = document.getElementById('slide-impuesto');
+        const slideDemanda = document.getElementById('slide-demanda');
+        const slideOferta = document.getElementById('slide-oferta');
+
+        const valImpuesto = document.getElementById('val-impuesto');
+        const valDemanda = document.getElementById('val-demanda');
+        const valOferta = document.getElementById('val-oferta');
+
+        // Función vacía temporal para el menú lateral
+        function cambiarDemo(demo) {
+            alert("Pronto activaremos las otras demos. ¡Concéntrate en la gráfica central!");
+        }
+
+        // 2. Función principal de dibujo
+        function dibujarGrafico() {
+            // Limpiar lienzo
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Leer valores de los sliders
+            let T = parseFloat(slideImpuesto.value);
+            let md = parseFloat(slideDemanda.value); // Pendiente demanda
+            let ms = parseFloat(slideOferta.value);  // Pendiente oferta
+            
+            // Actualizar textos en la pantalla
+            valImpuesto.innerText = T;
+            valDemanda.innerText = md >= 8 ? "Inelástica" : (md <= 3 ? "Elástica" : "Media");
+            valOferta.innerText = ms >= 8 ? "Inelástica" : (ms <= 3 ? "Elástica" : "Media");
+
+            // Configuración del plano (coordenadas)
+            const ox = 60;  // Origen X
+            const oy = 350; // Origen Y
+            const scaleX = 20;
+            const scaleY = 10;
+
+            // Dibujar Ejes
+            ctx.beginPath();
+            ctx.moveTo(ox, 20);
+            ctx.lineTo(ox, oy);
+            ctx.lineTo(580, oy);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Textos Ejes
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('Precio (P)', 10, 15);
+            ctx.fillText('Cantidad (Q)', 500, oy + 20);
+
+            // 3. Lógica Económica
+            // Fijamos un equilibrio inicial estable en Q=12, P=15
+            const Qe = 12;
+            const Pe = 15;
+            
+            // Calculamos el origen de las rectas para que siempre crucen en (Qe, Pe)
+            const a = Pe + md * Qe; // Intercepto Demanda
+            const c = Pe - ms * Qe; // Intercepto Oferta
+
+            // Calcular nuevo equilibrio con el Impuesto T
+            let Qt = (a - c - T) / (md + ms);
+            if (Qt < 0) Qt = 0; // Evitamos cantidades negativas extremas
+
+            let P_pagado = a - md * Qt;
+            let P_recibido = c + ms * Qt;
+
+            // 4. Dibujar Áreas de Carga Fiscal (Se dibujan al fondo)
+            if (T > 0 && Qt > 0) {
+                // Carga Consumidor (Rojo claro)
+                ctx.fillStyle = 'rgba(231, 76, 60, 0.3)';
+                ctx.fillRect(ox, oy - P_pagado * scaleY, Qt * scaleX, (P_pagado - Pe) * scaleY);
+
+                // Carga Productor (Azul claro)
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.3)';
+                ctx.fillRect(ox, oy - Pe * scaleY, Qt * scaleX, (Pe - P_recibido) * scaleY);
+            }
+
+            // 5. Dibujar Curvas
+            // Curva de Demanda (D)
+            ctx.beginPath();
+            ctx.moveTo(ox + 2 * scaleX, oy - (a - md * 2) * scaleY);
+            ctx.lineTo(ox + 25 * scaleX, oy - (a - md * 25) * scaleY);
+            ctx.strokeStyle = '#2980b9'; // Azul
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillText('D', ox + 26 * scaleX, oy - (a - md * 25) * scaleY);
+
+            // Curva de Oferta inicial (S1)
+            ctx.beginPath();
+            ctx.moveTo(ox + 2 * scaleX, oy - (c + ms * 2) * scaleY);
+            ctx.lineTo(ox + 25 * scaleX, oy - (c + ms * 25) * scaleY);
+            ctx.strokeStyle = '#c0392b'; // Rojo
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillText('S1', ox + 26 * scaleX, oy - (c + ms * 25) * scaleY);
+
+            // Curva de Oferta desplazada (S2)
+            if (T > 0) {
+                ctx.beginPath();
+                ctx.moveTo(ox + 2 * scaleX, oy - (c + T + ms * 2) * scaleY);
+                ctx.lineTo(ox + 25 * scaleX, oy - (c + T + ms * 25) * scaleY);
+                ctx.strokeStyle = '#e74c3c'; // Rojo más claro
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]); // Línea discontinua
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillText('S2', ox + 26 * scaleX, oy - (c + T + ms * 25) * scaleY);
+                
+                // Líneas punteadas hacia los ejes
+                ctx.beginPath();
+                ctx.moveTo(ox, oy - P_pagado * scaleY);
+                ctx.lineTo(ox + Qt * scaleX, oy - P_pagado * scaleY); 
+                ctx.lineTo(ox + Qt * scaleX, oy); 
+                ctx.moveTo(ox, oy - P_recibido * scaleY);
+                ctx.lineTo(ox + Qt * scaleX, oy - P_recibido * scaleY); 
+                ctx.strokeStyle = '#7f8c8d';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Etiquetas de Precios
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '12px Arial';
+                ctx.fillText(`P. Pagado`, ox + 5, oy - P_pagado * scaleY - 5);
+                ctx.fillText(`P. Recibido`, ox + 5, oy - P_recibido * scaleY + 15);
+
+                // --- CALCULAR Y MOSTRAR INCIDENCIA (Lo que dicen tus apuntes) ---
+                let cargaConsumidor = P_pagado - Pe;
+                let cargaProductor = Pe - P_recibido;
+                let pctConsumidor = (cargaConsumidor / T) * 100;
+                let pctProductor = (cargaProductor / T) * 100;
+
+                ctx.font = 'bold 16px Arial';
+                ctx.fillStyle = '#c0392b'; // Rojo
+                ctx.fillText(`Carga Consumidor: ${pctConsumidor.toFixed(0)}%`, 350, 40);
+                ctx.fillStyle = '#2980b9'; // Azul
+                ctx.fillText(`Carga Productor: ${pctProductor.toFixed(0)}%`, 350, 65);
+            }
+        }
+
+        // 6. Escuchar los sliders para repintar en tiempo real
+        slideImpuesto.addEventListener('input', dibujarGrafico);
+        slideDemanda.addEventListener('input', dibujarGrafico);
+        slideOferta.addEventListener('input', dibujarGrafico);
+
+        // Dibujar la gráfica al cargar la página por primera vez
+        dibujarGrafico();
+    </script>
+</body>
+</html>
